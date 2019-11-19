@@ -78,16 +78,7 @@ public class ListAppActivity extends AppCompatActivity {
                     if(installedAppAdapter.mCheckStates.get(i) == true)
                     {
 
-//                        Bitmap bitmap = ((BitmapDrawable)installedApps.get(i).getIcon()).getBitmap();
-//                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-//                        byte[] b = baos.toByteArray();
-//
-//                        send_data.add(new AppList_for_send(installedApps.get(i).getName(), b , installedApps.get(i).getPackages()));
 
-//                        result.append(installedApps.get(i).getPackages());
-//
-//                        result.append("\n");
 
                         mylist.add(installedApps.get(i).getPackages());
 
@@ -96,8 +87,6 @@ public class ListAppActivity extends AppCompatActivity {
                 }
 //                Log.d("DD","length:" + installedApps.size());
                 Intent intent = new Intent(ListAppActivity.this, LockScreenActivity.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putSerializable("apps",  send_data);
                 intent.putExtra("apps", mylist);
 
                 startActivity(intent);
