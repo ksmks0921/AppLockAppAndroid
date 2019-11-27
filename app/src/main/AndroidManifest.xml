@@ -2,9 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
     package="com.yjm.applauncherlock">
-
-    <dist:module dist:instant="true" />
-
+    <uses-permission android:name="android.permission.REORDER_TASKS"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -12,15 +11,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".LockScreenActivity"></activity>
-        <activity android:name=".ListAppActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".LauncherActivity">
+
+        </activity>
+        <activity android:name=".LockScreenActivity"
+            android:theme="@style/NoTitleBar"
+            android:launchMode="singleTop"
+            android:stateNotNeeded="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.MONKEY"/>
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
         </activity>
+        <activity android:name=".ListAppActivity" />
+        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>

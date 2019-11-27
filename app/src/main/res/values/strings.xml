@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">AppLauncherLock</string>
+    <string name="error_lockscreen_not_shown">The lockscreen could not be shown. </string>
+    <string name="permission_accessibility_setting_description">"Turn on and it locks all soft key including HOME, RECENTS, BACK, MENU buttons. You may be warned about potential privacy risk, that's just a regular informative warning for any accessibility service. We promise NEVER EVER collecting your personal information in this accessibility service."</string>
 </resources>

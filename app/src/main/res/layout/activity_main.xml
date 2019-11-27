@@ -15,7 +15,23 @@
         android:layout_marginRight="10dp"
         android:layout_height="50dp"
         android:text="Add Apps"
-        android:gravity="center">
+        android:gravity="center"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorWhite"
+        android:layout_marginBottom="15dp">
+
+    </Button>
+    <Button
+        android:id="@+id/add_background"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_height="50dp"
+        android:text="Change background image"
+        android:gravity="center"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorWhite"
+        android:layout_marginBottom="15dp">
 
     </Button>
     <Button
@@ -25,7 +41,14 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:text="Cancel"
-        android:gravity="center">
+        android:gravity="center"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorWhite"
+        android:layout_marginBottom="10dp">
 
     </Button>
+    <ImageView
+        android:layout_width="60dp"
+        android:layout_height="69dp"
+        android:id="@+id/example"/>
 </LinearLayout>

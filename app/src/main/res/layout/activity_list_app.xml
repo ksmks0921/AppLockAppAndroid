@@ -6,11 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".ListAppActivity"
     android:orientation="vertical">
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressbar"
+        android:layout_centerInParent="true"/>
+
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:listitem="@layout/list_cell"
-        android:id="@+id/app_list">
+        android:visibility="invisible"
+        android:id="@+id/app_list"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        >
 
     </ListView>
     <LinearLayout

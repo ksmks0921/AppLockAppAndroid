@@ -3,6 +3,7 @@ package com.yjm.applauncherlock;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,11 +16,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -28,8 +32,13 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+//import com.yjm.applauncherlock.utilities.LockScreen;
+
+import com.yjm.applauncherlock.utilities.Constants;
 
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
@@ -44,59 +53,103 @@ public class ListAppActivity extends AppCompatActivity {
     private List<AppList> installedApps;
     private AppAdapter installedAppAdapter;
     private LinearLayout add_btn;
-
+    private ProgressBar mProgressBar;
+    private int mProgressStatus = 0;
+    private Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_app);
 
+
+        mProgressBar = (ProgressBar) findViewById(R.id.progressbar);
+
         userInstalledApps = (ListView) findViewById(R.id.app_list);
-        installedApps = getInstalledApps();
-        installedAppAdapter = new AppAdapter(this, installedApps);
-        userInstalledApps.setAdapter(installedAppAdapter);
-
-
         add_btn = (LinearLayout) findViewById(R.id.add_btn);
-        add_btn.setOnClickListener(new View.OnClickListener() {
+
+        new Thread(new Runnable() {
             @Override
-            public void onClick(View view) {
-
-                StringBuilder result = new StringBuilder();
-
-
-
-                 ArrayList<String> mylist = new ArrayList<>();
-//                ArrayList<AppList_for_send> send_data = new ArrayList<>();
-
-
-                for(int i=0 ; i < installedApps.size(); i++)
-
-                {
-
-
-                    if(installedAppAdapter.mCheckStates.get(i) == true)
-                    {
-
-
-
-                        mylist.add(installedApps.get(i).getPackages());
-
-                    }
-
+            public void run() {
+                while (mProgressStatus < 50){
+                    mProgressStatus ++;
+                    android.os.SystemClock.sleep(50);
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProgressBar.setProgress(mProgressStatus);
+                        }
+                    });
                 }
-//                Log.d("DD","length:" + installedApps.size());
-                Intent intent = new Intent(ListAppActivity.this, LockScreenActivity.class);
-                intent.putExtra("apps", mylist);
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        userInstalledApps.setVisibility(View.VISIBLE);
+                        mProgressBar.setVisibility(View.INVISIBLE);
+                        installedApps = getInstalledApps();
+                        installedAppAdapter = new AppAdapter(ListAppActivity.this, installedApps);
+                        userInstalledApps.setAdapter(installedAppAdapter);
 
-                startActivity(intent);
 
 
+                        add_btn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+
+
+
+                                ArrayList<String> mylist = new ArrayList<>();
+
+
+
+                                for(int i=0 ; i < installedApps.size(); i++)
+
+                                {
+
+
+                                    if(installedAppAdapter.mCheckStates.get(i) == true)
+                                    {
+
+
+
+                                        mylist.add(installedApps.get(i).getPackages());
+
+                                    }
+
+                                }
+
+                                Intent intent = new Intent(ListAppActivity.this, LockScreenActivity.class);
+                                intent.putExtra("apps", mylist);
+                                Constants.apps = mylist;
+                                Constants.flag_setting = true;
+//
+                                startActivity(intent);
+
+
+
+                            }
+                        });
+                    }
+                });
             }
-        });
+        }).start();
+
+
+
 
 
     }
+//    private boolean isMyLauncherDefault() {
+//
+//        PackageManager localPackageManager = getPackageManager();
+//        Intent intent = new Intent("android.intent.action.MAIN");
+//        intent.addCategory("android.intent.category.HOME");
+//        String str = localPackageManager.resolveActivity(intent,
+//                PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName;
+//        return str.equals(getPackageName());
+//
+//    }
 
 
     private Object[] appendValue(Object[] obj, Object newObj) {
