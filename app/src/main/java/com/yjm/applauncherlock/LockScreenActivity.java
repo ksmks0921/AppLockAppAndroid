@@ -9,8 +9,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -24,6 +26,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +34,8 @@ import android.view.ViewConfiguration;
 
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -45,6 +50,8 @@ public class LockScreenActivity extends AppCompatActivity  implements passwordDi
     List<AppList> list_app;
     ArrayList<String> applist;
     RecyclerView recyclerView;
+    private LinearLayout main_layout;
+    private TextView select_launcher, select_launcher_description;
 //    private ImageView example;
 
     @Override
@@ -53,21 +60,43 @@ public class LockScreenActivity extends AppCompatActivity  implements passwordDi
         setContentView(R.layout.activity_lock_screen);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview_id);
+        main_layout = findViewById(R.id.main_layout);
+        select_launcher = findViewById(R.id.select_launcher);
+        select_launcher_description = findViewById(R.id.select_launcher_description);
         Bitmap bitmap = BitmapFactory.decodeFile(Constants.Background_file_path);
         Drawable drawable = new BitmapDrawable(bitmap);
-        recyclerView.setBackground(drawable);
+        main_layout.setBackground(drawable);
+        select_launcher.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                resetPreferredLauncherAndOpenChooser(LockScreenActivity.this);
+
+            }
+        });
+
 
         if(Constants.flag_setting == false) {
             Intent intent = new Intent(LockScreenActivity.this, MainActivity.class);
-//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             finish();
             startActivity(intent);
 
         }
         else {
 
-             initUI();
+            initUI();
+            if(!isMyAppLauncherDefault()){
+                select_launcher_description.setVisibility(View.VISIBLE);
+                select_launcher.setVisibility(View.VISIBLE);
+            }
+            else {
+
+                select_launcher_description.setVisibility(View.GONE);
+                select_launcher.setVisibility(View.GONE);
+            }
+
+
         }
+//        Toast.makeText(getApplicationContext(),"sdfsdf__________"+isMyAppLauncherDefault(), Toast.LENGTH_SHORT).show();
 
 
 
@@ -85,9 +114,46 @@ public class LockScreenActivity extends AppCompatActivity  implements passwordDi
     }
 //
 
+    private boolean isMyAppLauncherDefault() {
+//        final IntentFilter filter = new IntentFilter(Intent.ACTION_MAIN);
+//        filter.addCategory(Intent.CATEGORY_HOME);
+//
+//        List<IntentFilter> filters = new ArrayList<IntentFilter>();
+//        filters.add(filter);
+//
+//        final String myPackageName = getPackageName();
+//        List<ComponentName> activities = new ArrayList<ComponentName>();
+//        final PackageManager packageManager = (PackageManager) getPackageManager();
+//
+//        packageManager.getPreferredActivities(filters, activities, null);
+//
+//        for (ComponentName activity : activities) {
+//            if (myPackageName.equals(activity.getPackageName())) {
+//                return true;
+//            }
+//        }
+//        return false;
 
+        PackageManager localPackageManager = getPackageManager();
+        Intent intent = new Intent("android.intent.action.MAIN");
+        intent.addCategory("android.intent.category.HOME");
+        String str = localPackageManager.resolveActivity(intent,
+                PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName;
+        return str.equals(getPackageName());
+    }
 
+    public static void resetPreferredLauncherAndOpenChooser(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        ComponentName componentName = new ComponentName(context, Fake.class);
+        packageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
 
+        Intent selector = new Intent(Intent.ACTION_MAIN);
+        selector.addCategory(Intent.CATEGORY_HOME);
+        selector.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(selector);
+
+        packageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
+    }
 
 
     public void initUI(){
@@ -105,7 +171,7 @@ public class LockScreenActivity extends AppCompatActivity  implements passwordDi
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
                 }
-//            imageView.setImageDrawable(icon);
+
 
                 final PackageManager pm = getApplicationContext().getPackageManager();
                 ApplicationInfo ai;
@@ -216,15 +282,6 @@ public class LockScreenActivity extends AppCompatActivity  implements passwordDi
         decorView.setSystemUiVisibility(uiOptions);
     }
 
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//
-//        ActivityManager activityManager = (ActivityManager) getApplicationContext()
-//                .getSystemService(Context.ACTIVITY_SERVICE);
-//
-//        activityManager.moveTaskToFront(getTaskId(), 0);
-//    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
